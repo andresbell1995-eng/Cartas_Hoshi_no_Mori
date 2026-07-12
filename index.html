@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>運命の札 · Cartas de Recompensas</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700&family=Shippori+Mincho:wght@400;700&family=Crimson+Pro:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0f0d10;
+    --ink2: #1a1520;
+    --ink3: #241e2e;
+    --washi: #f2ede4;
+    --washi2: #e0d8c8;
+    --red: #c0392b;
+    --red2: #e74c3c;
+    --red-dim: #7a1a10;
+    --gold: #c4a24a;
+    --gold-light: #e8cc80;
+    --gold-dim: #7a6130;
+    --glow-red: rgba(192,57,43,0.4);
+    --glow-gold: rgba(196,162,74,0.35);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background-color: var(--ink);
+    background-image:
+      radial-gradient(ellipse at 15% 15%, rgba(192,57,43,0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 85% 85%, rgba(26,32,96,0.2) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 50%, rgba(196,162,74,0.04) 0%, transparent 70%),
+      url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23c4a24a' fill-opacity='0.025'%3E%3Cpath d='M40 0 L42 38 L80 40 L42 42 L40 80 L38 42 L0 40 L38 38Z'/%3E%3C/g%3E%3C/svg%3E");
+    min-height: 100vh;
+    font-family: 'Noto Serif JP', 'Crimson Pro', serif;
+    color: var(--washi);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 70px;
+    overflow-x: hidden;
+  }
+
+  .petals-bg { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; }
+  .petal {
+    position:absolute; top:-30px;
+    width:10px; height:10px;
+    background: radial-gradient(ellipse at 40% 30%, #f0c0c8, #d08090);
+    border-radius: 0 100% 0 100%;
+    opacity:0;
+    animation: petalFall linear infinite;
+  }
+  @keyframes petalFall {
+    0%   { opacity:0;   transform: translateY(0) rotate(0deg) translateX(0); }
+    10%  { opacity:0.5; }
+    90%  { opacity:0.3; }
+    100% { opacity:0;   transform: translateY(105vh) rotate(600deg) translateX(60px); }
+  }
+
+  header {
+    text-align:center; margin-bottom:44px;
+    position:relative; z-index:1;
+  }
+  .jp-crest {
+    font-size:2.2rem; color:var(--red); margin-bottom:6px;
+    display:block; filter: drop-shadow(0 0 10px var(--glow-red));
+    animation: crestPulse 4s ease-in-out infinite; line-height:1;
+  }
+  @keyframes crestPulse {
+    0%,100% { filter:drop-shadow(0 0 8px var(--glow-red)); transform:scale(1); }
+    50%      { filter:drop-shadow(0 0 18px var(--glow-red)); transform:scale(1.06); }
+  }
+  .jp-title-sub {
+    font-family:'Noto Serif JP',serif; font-size:0.75rem;
+    letter-spacing:6px; color:var(--gold-dim); text-transform:uppercase; margin-bottom:6px;
+  }
+  h1 {
+    font-family:'Shippori Mincho','Noto Serif JP',serif;
+    font-size: clamp(1.3rem,3.5vw,2.4rem);
+    color:var(--washi); text-shadow:0 0 24px rgba(242,237,228,0.15),0 2px 6px #000;
+    letter-spacing:3px; line-height:1.3;
+  }
+  .jp-kanji {
+    font-family:'Noto Serif JP',serif;
+    font-size: clamp(0.85rem,2vw,1.1rem);
+    color:var(--red); letter-spacing:8px; margin-top:4px; opacity:0.85;
+  }
+  .divider { display:flex; align-items:center; gap:12px; margin:14px auto 0; width:320px; }
+  .divider-line { flex:1; height:1px; background:linear-gradient(90deg,transparent,var(--red-dim),var(--red),var(--red-dim),transparent); }
+  .divider-diamond { width:7px; height:7px; background:var(--red); transform:rotate(45deg); box-shadow:0 0 6px var(--glow-red); }
+
+  .main-layout {
+    display:flex; flex-wrap:wrap; gap:48px;
+    justify-content:center; align-items:flex-start;
+    width:100%; max-width:1200px; position:relative; z-index:1;
+  }
+
+  /* ── Cards section ─────────────────────────────────────────────── */
+  .cards-section { display:flex; flex-direction:column; align-items:center; gap:26px; flex:1.3; min-width:340px; max-width:660px; }
+
+  .deck-frame {
+    position:relative; width:100%;
+    padding:22px; border-radius:6px;
+    background:linear-gradient(160deg, rgba(26,21,32,0.6), rgba(36,30,46,0.6));
+    border:1px solid rgba(196,162,74,0.25);
+    box-shadow:0 0 24px rgba(0,0,0,0.4), inset 0 0 30px rgba(192,57,43,0.04);
+  }
+  .deck-frame .corner { position:absolute; width:16px; height:16px; border-color:var(--gold); border-style:solid; opacity:0.7; }
+  .deck-frame .corner.tl { top:6px; left:6px; border-width:1px 0 0 1px; }
+  .deck-frame .corner.tr { top:6px; right:6px; border-width:1px 1px 0 0; }
+  .deck-frame .corner.bl { bottom:6px; left:6px; border-width:0 0 1px 1px; }
+  .deck-frame .corner.br { bottom:6px; right:6px; border-width:0 1px 1px 0; }
+
+  .card-grid {
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+    gap:10px;
+    width:100%;
+    max-height:560px;
+    overflow-y:auto;
+    padding-right:4px;
+    perspective:1200px;
+    transition: opacity 0.32s ease, transform 0.32s ease;
+  }
+  .card-grid.grid-fade { opacity:0; transform:scale(0.95); }
+  .card-grid::-webkit-scrollbar { width:4px; }
+  .card-grid::-webkit-scrollbar-track { background:transparent; }
+  .card-grid::-webkit-scrollbar-thumb { background:var(--red-dim); border-radius:2px; }
+
+  .card { aspect-ratio: 5 / 7; cursor:pointer; }
+  .card.disabled { cursor:default; }
+  .card-inner {
+    position:relative; width:100%; height:100%;
+    transition: transform 0.65s cubic-bezier(.4,.15,.2,1);
+    transform-style: preserve-3d;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+
+  .card-face {
+    position:absolute; inset:0;
+    backface-visibility:hidden; -webkit-backface-visibility:hidden;
+    border-radius:6px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    overflow:hidden;
+  }
+
+  .card-back {
+    background:linear-gradient(160deg,var(--ink2) 0%,var(--ink3) 100%);
+    border:1px solid var(--gold-dim);
+    box-shadow:0 2px 8px rgba(0,0,0,0.5), inset 0 0 16px rgba(192,57,43,0.08);
+    transition: box-shadow 0.2s, transform 0.2s, border-color 0.2s;
+  }
+  .card-back::before {
+    content:''; position:absolute; inset:5px;
+    border:1px solid rgba(196,162,74,0.35); border-radius:3px;
+  }
+  .card-back-pattern {
+    position:absolute; inset:0;
+    background-image: repeating-linear-gradient(45deg, rgba(196,162,74,0.05) 0 2px, transparent 2px 9px);
+  }
+  .card-back-kanji {
+    font-family:'Shippori Mincho',serif; font-size:1.5rem; color:var(--gold);
+    opacity:0.8; text-shadow:0 0 8px var(--glow-gold); position:relative; z-index:1;
+  }
+  .card:not(.flipped):not(.disabled):hover .card-back {
+    box-shadow:0 4px 16px rgba(0,0,0,0.55), 0 0 16px var(--glow-gold), inset 0 0 20px rgba(192,57,43,0.12);
+    border-color:var(--gold-light);
+    transform:translateY(-3px);
+  }
+
+  .card-front {
+    transform: rotateY(180deg);
+    border:1px solid var(--gold);
+    padding:6px 4px;
+    gap:5px;
+    box-shadow:inset 0 0 14px rgba(0,0,0,0.35);
+  }
+  .card-front-img {
+    width:38px; height:38px; border-radius:50%;
+    border:1px solid rgba(255,255,255,0.3);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1.05rem; background:rgba(0,0,0,0.28);
+    position:relative; overflow:hidden; flex-shrink:0;
+  }
+  .card-front-img img {
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; border-radius:50%; display:none;
+  }
+  .card-front-img img.loaded { display:block; }
+  .card-front-img.has-img .card-emoji { visibility:hidden; }
+  .card-front-name {
+    font-size:0.52rem; line-height:1.2; text-align:center;
+    font-family:'Noto Serif JP',serif; color:#fff;
+    text-shadow:0 1px 3px rgba(0,0,0,0.9);
+    display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+    padding:0 2px;
+  }
+
+  .shuffle-btn {
+    font-family:'Noto Serif JP',serif; font-size:0.85rem; letter-spacing:3px;
+    color:var(--washi); background:transparent; border:1px solid var(--red);
+    padding:12px 40px; border-radius:2px; cursor:pointer;
+    position:relative; overflow:hidden; transition:all 0.2s;
+    box-shadow:0 0 14px rgba(192,57,43,0.25),inset 0 0 20px rgba(192,57,43,0.05);
+    text-transform:uppercase;
+  }
+  .shuffle-btn::before,.shuffle-btn::after {
+    content:''; position:absolute;
+    width:8px; height:8px; border-color:var(--red); border-style:solid; transition:all 0.2s;
+  }
+  .shuffle-btn::before { top:4px; left:4px; border-width:1px 0 0 1px; }
+  .shuffle-btn::after  { bottom:4px; right:4px; border-width:0 1px 1px 0; }
+  .shuffle-btn:hover:not(:disabled) {
+    background:rgba(192,57,43,0.12);
+    box-shadow:0 0 28px rgba(192,57,43,0.5),inset 0 0 30px rgba(192,57,43,0.1);
+    color:#fff;
+  }
+  .shuffle-btn:hover:not(:disabled)::before { top:2px; left:2px; width:12px; height:12px; }
+  .shuffle-btn:hover:not(:disabled)::after  { bottom:2px; right:2px; width:12px; height:12px; }
+  .shuffle-btn:active:not(:disabled) { transform:scale(0.97); }
+  .shuffle-btn:disabled { opacity:0.4; cursor:not-allowed; }
+  .shuffle-btn .ico { display:inline-block; transition: transform 0.5s; }
+  .shuffle-btn.spinning .ico { transform: rotate(360deg); }
+
+  .result-panel {
+    background:linear-gradient(160deg,var(--ink2) 0%,var(--ink3) 100%);
+    border:1px solid rgba(192,57,43,0.35); border-radius:3px;
+    padding:26px 32px; text-align:center;
+    min-width:280px; max-width:360px; width:100%;
+    position:relative; opacity:0; transform:translateY(12px);
+    transition:opacity 0.5s,transform 0.5s;
+  }
+  .result-panel.visible { opacity:1; transform:translateY(0); }
+
+  .result-panel .corner { position:absolute; width:14px; height:14px; border-color:var(--red); border-style:solid; }
+  .result-panel .corner.tl { top:7px; left:7px; border-width:1px 0 0 1px; }
+  .result-panel .corner.tr { top:7px; right:7px; border-width:1px 1px 0 0; }
+  .result-panel .corner.bl { bottom:7px; left:7px; border-width:0 0 1px 1px; }
+  .result-panel .corner.br { bottom:7px; right:7px; border-width:0 1px 1px 0; }
+
+  .result-label { font-family:'Noto Serif JP',serif; font-size:0.6rem; letter-spacing:4px; color:var(--red); text-transform:uppercase; margin-bottom:14px; }
+  .result-img-placeholder {
+    width:88px; height:88px; border-radius:50%;
+    border:1px solid rgba(192,57,43,0.4);
+    margin:0 auto 16px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:2.2rem;
+    background:radial-gradient(circle,rgba(192,57,43,0.08),transparent);
+    overflow:hidden; position:relative;
+  }
+  .result-img-placeholder img {
+    position:absolute; inset:0; width:100%; height:100%;
+    object-fit:cover; border-radius:50%; display:none;
+  }
+  .result-img-placeholder img.loaded { display:block; }
+  .result-img-placeholder.has-img .result-emoji { visibility:hidden; }
+
+  .result-name { font-family:'Shippori Mincho',serif; font-size:1.3rem; color:var(--washi); letter-spacing:2px; margin-bottom:6px; }
+  .result-divider { width:60px; height:1px; background:linear-gradient(90deg,transparent,var(--red),transparent); margin:8px auto; }
+  .result-desc { font-size:0.92rem; color:#a09080; font-style:italic; line-height:1.6; font-family:'Crimson Pro',serif; }
+
+  .progress-note { font-size:0.7rem; letter-spacing:2px; color:var(--gold-dim); text-transform:uppercase; font-family:'Noto Serif JP',serif; }
+  .progress-note strong { color:var(--gold-light); }
+
+  /* Items panel */
+  .items-panel { flex:1; min-width:280px; max-width:400px; }
+  .items-panel h2 {
+    font-family:'Noto Serif JP',serif; font-size:0.72rem; letter-spacing:4px;
+    color:var(--red); text-transform:uppercase; margin-bottom:16px;
+    padding-bottom:8px; border-bottom:1px solid rgba(192,57,43,0.3);
+    display:flex; align-items:center; gap:8px;
+  }
+  .item-list { display:flex; flex-direction:column; gap:6px; max-height:620px; overflow-y:auto; padding-right:4px; }
+  .item-list::-webkit-scrollbar { width:4px; }
+  .item-list::-webkit-scrollbar-track { background:transparent; }
+  .item-list::-webkit-scrollbar-thumb { background:var(--red-dim); border-radius:2px; }
+
+  .item-card {
+    background:var(--ink2); border:1px solid rgba(192,57,43,0.12);
+    border-left:3px solid transparent; border-radius:2px;
+    padding:8px 12px; display:flex; align-items:center; gap:10px;
+    transition:border-color 0.3s,background 0.3s,box-shadow 0.3s,opacity 0.3s;
+  }
+  .item-card.highlight {
+    border-left-color:var(--red); background:rgba(192,57,43,0.08);
+    box-shadow:0 0 14px rgba(192,57,43,0.2);
+  }
+  .item-card.found:not(.highlight) { opacity:0.55; }
+  .item-card-img {
+    width:36px; height:36px; border-radius:50%;
+    border:1px solid rgba(192,57,43,0.3);
+    display:flex; align-items:center; justify-content:center;
+    font-size:1rem; flex-shrink:0; background:rgba(192,57,43,0.04);
+    overflow:hidden; position:relative;
+  }
+  .item-card-img img { width:100%; height:100%; object-fit:cover; border-radius:50%; display:none; }
+  .item-card-img img.loaded { display:block; }
+  .item-card-img.has-img .emoji-label { display:none; }
+
+  .item-card-info { flex:1; min-width:0; }
+  .item-card-name { font-family:'Noto Serif JP',serif; font-size:0.75rem; color:var(--washi); margin-bottom:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .item-card-status { font-size:0.65rem; color:var(--gold); font-family:'Noto Serif JP',serif; white-space:nowrap; opacity:0.85; flex-shrink:0; letter-spacing:1px; }
+
+  .confetti-container { position:fixed; inset:0; pointer-events:none; z-index:100; overflow:hidden; }
+  .confetti-piece { position:absolute; top:-20px; opacity:0; animation:confettiFall ease-in forwards; }
+  @keyframes confettiFall {
+    0%   { opacity:1; transform:translateY(0) rotate(0deg) translateX(0); }
+    100% { opacity:0; transform:translateY(110vh) rotate(720deg) translateX(40px); }
+  }
+
+  @media (max-width:600px) {
+    .card-grid { grid-template-columns: repeat(auto-fill, minmax(66px, 1fr)); max-height:440px; }
+    .card-front-name { font-size:0.46rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="petals-bg" id="petalsBg"></div>
+
+<header>
+  <span class="jp-crest">⛩</span>
+  <div class="jp-title-sub">Servidor de Rol · Hoshizora</div>
+  <h1>Cartas de la Fortuna</h1>
+  <div class="jp-kanji">運命の札</div>
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-diamond"></div>
+    <div class="divider-line"></div>
+  </div>
+</header>
+
+<div class="main-layout">
+
+  <div class="cards-section">
+    <div class="deck-frame">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="card-grid" id="cardGrid"></div>
+    </div>
+
+    <div class="progress-note" id="progressNote">0 / 0 cartas reveladas</div>
+
+    <button class="shuffle-btn" id="shuffleBtn" onclick="reorganize()">
+      <span class="ico">⟳</span>&nbsp; REORGANIZAR CARTAS &nbsp;<span class="ico">⟳</span>
+    </button>
+
+    <div class="result-panel" id="resultPanel">
+      <div class="corner tl"></div><div class="corner tr"></div>
+      <div class="corner bl"></div><div class="corner br"></div>
+      <div class="result-label">⬡ &nbsp;Has obtenido&nbsp; ⬡</div>
+      <div class="result-img-placeholder" id="resultImg">
+        <span class="result-emoji">🎴</span>
+        <img id="resultImgTag" src="" alt="">
+      </div>
+      <div class="result-name" id="resultName">—</div>
+      <div class="result-divider"></div>
+      <div class="result-desc" id="resultDesc"></div>
+    </div>
+  </div>
+
+  <div class="items-panel">
+    <h2>⛩ &nbsp;Tabla de Ítems</h2>
+    <div class="item-list" id="itemList"></div>
+  </div>
+
+</div>
+
+<div class="confetti-container" id="confettiContainer"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════════════
+//  CONFIGURACIÓN DE ÍTEMS — cada carta del mazo esconde uno de estos
+//  Para agregar imagen: reemplazá "" por la URL directa de la imagen
+//  Ejemplo: imageUrl: "https://i.imgur.com/ejemplo.png"
+// ══════════════════════════════════════════════════════════════════
+
+const ITEMS = [
+  { name:"Bangasa",       desc:"Una sombrilla tradicional en Wa, famosa por su diseño duradero y practico. Usada en su mayoría por gente capaz de cargar su robusto mango de bambú.",  emoji:"🧪", imageUrl:"https://i.imgur.com/i4n4sam.jpeg" },
+  { name:"Bastón de la Brisa Suave",             desc:"Utilizando tu acción, te permite crear o mantener una brisa ligera en la dirección de tu elección en un cono de 15 pies. Es bastante reconfortante en un día soleado o húmedo.",         emoji:"🔦", imageUrl:"https://i.imgur.com/eUKblvB.jpeg" },
+  { name:"Campanilla Oni Suzu",     desc:"Un Oni Suzu Bell es una campana japonesa tradicional (Suzu) con la forma de un rostro de Oni (demonio u ogro japonés), hecha comúnmente de arcilla o cerámica, que produce un sonido suave y resonante, y se usa tanto decorativamente como para propósitos espirituales en santuarios o hogares.",              emoji:"🪢", imageUrl:"https://i.imgur.com/9CVLsJK.png" },
+  { name:"Picadura del pescador",      desc:"No es el arma más letal del arsenal, pero sí la más versátil del muelle.",         emoji:"🍖", imageUrl:"https://i.imgur.com/F9B6Tn4.jpeg" },
+  { name:"La Luz Apacible",     desc:"Puede ser una shakuhachi de bambú negro con agujeros forrados en plata deslustrada, un biwa cuyo cuerpo está lacado con capas tan finas que parece seda solidificada, o un plectro de ébano tallado como una hoja de arce. Así como cualquier otro instrumento que elijas.",        emoji:"💰", imageUrl:"https://i.imgur.com/RABgbFJ.jpeg" },
+  { name:"Abanico Kinusen",  desc:"Este abanico de seda, está pintado a mano. Al abanicarse con él, se forman pétalos ilusorios de flor de cerezo que giran a tu alrededor antes de desvanecerse.", emoji:"📜", imageUrl:"https://i.imgur.com/JRM1Udr.png" },
+  { name:"Abanico perfumado",     desc:"Este abanico plegable tiene varillas de madera de ciprés pálido y un papel de fibra de morera, excepcionalmente resistente y liso.",                   emoji:"🪨", imageUrl:"https://i.imgur.com/n04fyOx.jpeg" },
+  { name:"Armadura Espiritual",      desc:"Esta armadura parece tener unos grabados en su exterior, parece haber múltiples inscripciones y plegarias dirigidas a aquellos que reposan en el más allá. Cuentan las leyendas que permite escuchar las penurias y dolor de aquellos en el más allá.",         emoji:"🌿", imageUrl:"https://i.imgur.com/bq0fYJn.jpeg" },
+  { name:"Banshō-Fude",         desc:"Este pincel es el más indicado para aquellos artistas cortos de talento... o tiempo.",                      emoji:"🗺",  imageUrl:"https://i.imgur.com/HGnuCIa.png" },
+  { name:"Cascabel Fantasma",desc:"Solo puede ser escuchado por quien lo lleva puesto, y por aquella persona o criatura en la que el portador esté pensando en ese momento.",       emoji:"🎯", imageUrl:"https://i.imgur.com/Ao1Z0hs.jpeg" },
+  { name:"Colgante del Shiba Inu",      desc:"Un colgante de plata envejecida, atada a un cristal celeste palido con unas letras de plata que dicen chú (lealtad).",                 emoji:"🦉", imageUrl:"https://i.imgur.com/ScQ20di.png" },
+  { name:"Frasquito de Referencias",         desc:"Es un frasquito de cristal negro azabache, lo suficientemente pequeño para caber en el puño, con un tapón de plata ligeramente oxidado.",           emoji:"🕯",  imageUrl:"https://i.imgur.com/b48TqrG.png" },
+  { name:"Guantes anti espinas",     desc:"Estos guantes de trabajo están confeccionados con un tejido de seda y fibra de ramio, teñidos en colores tierra y gris piedra.",                        emoji:"🍺", imageUrl:"https://i.imgur.com/4M5EQ2x.png" },
+  { name:"Haori del Último Brindis",  desc:"Un haori de estilo festivo, generalmente suele ser de un rojo intenso bordado con racimos de uvas doradas.",                emoji:"🧤", imageUrl:"https://i.imgur.com/CzXLjRB.png" },
+  { name:"Janome - Sombrilla Tradicional",       desc:"Una sombrilla tradicional en Wa, famosa por ser mas refinado, ligero y elegante. Su uso, destinado a las Geishas y actores del teatro Kabuki.", emoji:"🪤", imageUrl:"https://i.imgur.com/wVKMvoW.png" },
+  { name:"Kimono Adaptable",  desc:"Mientras uses este Kimono, puedes usar una acción adicional para cambiar el estilo, el color y la calidad aparente de la prenda.", emoji:"⚡", imageUrl:"https://i.imgur.com/2HDLFK9.png" },
+  { name:"Kunai Ceremonial",    desc:"Creado bajo el rito del dios sol, su hoja corta y robusta, conserva marcas deliberadas del proceso artesanal, consideradas una muestra de respeto hacia los espíritus del acero.",  emoji:"💎", imageUrl:"https://i.imgur.com/14OAP06.png" },
+  { name:"kurikawa shoten",   desc:"Hecha de una sola pieza y muy útil para soportar la calor del verano, con forma de paleta de ping-pong.",        emoji:"🏹", imageUrl:"https://i.imgur.com/bwMTDh3.png" },
+  { name:"La Pipa del Crepúsculo",     desc:"Es una pipa kiseru de metal oscuro, con una boquilla de bambú envejecido y un cuenco diminuto.",          emoji:"🔮", imageUrl:"https://i.imgur.com/4bXXDZH.png" },
+  { name:"La Tetera de Té Mágica",  desc:"Es una tetera de hierro fundido (tetsubin), sencilla y presentable, con el fondo ligeramente ahumado por incontables hogueras de campamento.",  emoji:"⚙",  imageUrl:"https://i.imgur.com/iK9cUzl.png" },
+  { name:"Libreta de ilustración",  desc:"Es la herramienta favorita de artistas para probar poses, de exploradores para esbozar criaturas vistas de lejos y ver cómo se mueven, y de cualquiera que quiera enviar un mensaje donde las palabras se acompañen de un guiño animado.",                          emoji:"🔔", imageUrl:"https://i.imgur.com/81i93vj.png" },
+  { name:"Libro de Conjuros Duradero",    desc:"Sus tapas son de madera aromática —sándalo, cedro o ciprés— y sus páginas, de un pergamino especial tratado con resinas. ",  emoji:"✨", imageUrl:"https://i.imgur.com/cVMBJOu.png" },
+  { name:"Maneshī Ningyō",      desc:"Es una marioneta de madera de sicómoro, lisa al tacto, con rostro sin pintar y un sencillo kimono de tela cruda.",  emoji:"👢", imageUrl:"https://i.imgur.com/Yo8tH2m.png" },
+  { name:"Monedero de Rana",  desc:"Este monedero está confeccionado con un cuero verde suave, tratado para tener una textura que recuerda vagamente a la piel de una rana.",     emoji:"🗿", imageUrl:"https://i.imgur.com/NBYiLHz.png" },
+  { name:"Ofuda de la Claridad Solar",    desc:"Un sello de papel delgado, pintado con tinta dorada que refleja la luz como si fuera un espejo de agua reflejando el sol resplandeciente en el centro.",  emoji:"🐉", imageUrl:"https://i.imgur.com/LwEL1Eh.png" },
+  { name:"Ofuda de la Luna Quebrada",     desc:"Un sello de papel delgado, pintado con tinta plateada que refleja la luz como si fuera agua nocturna. En su centro aparece una luna partida en dos. ", emoji:"🌑", imageUrl:"https://i.imgur.com/8QyeFuu.png" },
+  { name:"Omikuji",  desc:"Una maravilla de la ingeniería mecánica de la época, creada por un artífice originario de Wa, utilizado para ceremonias de Té en verano.",  emoji:"🗡",  imageUrl:"https://i.imgur.com/ZZRyg36.png" },
+  { name:"Ryu Omamori",     desc:"Cuenta una antigua leyenda que susanoo dotó de energía estas pequeñas piedras, al rezarles, hacen salir una imagen ilusoria de un pequeño dragón de energía que solo tú puedes ver.",    emoji:"👁",  imageUrl:"https://i.imgur.com/cLnJtTK.png" },
+  { name:"Shuriken Ornamental",  desc:"Es una pieza de orfebrería fina, con la forma clásica de una estrella shuriken, pero fabricada en metal pulido.",  emoji:"💍", imageUrl:"https://i.imgur.com/COs3O2b.png" },
+  { name:"Sombrero de bambú", desc:"Este sombrero cónico está tejido con tiras de bambú maduro, formando un ala ancha, flexible y ligeramente ondulada que parece capturar y doblar la luz a su alrededor.",  emoji:"📗", imageUrl:"https://i.imgur.com/Lh6eZG5.png" },
+  { name:"Talismán de la Moda",      desc:"Puede ser una pluma de faisán prendida en el sombrero, un alfiler de capa con una lentejuela única, o un cordón de seda tejido alrededor de la muñeca. ",   emoji:"🔷", imageUrl:"https://i.imgur.com/UHb79XJ.png" },
+  { name:"Varita de Luciérnagas", desc:"Tallada en una rama de bambú que aún conserva su corteza áspera y sus nudos naturales, esta vara parece una simple caña caída en la ribera.", emoji:"⚔",  imageUrl:"https://i.imgur.com/bWkaW64.png" },
+  { name:"Varita del Hinoki", desc:"Tres veces por amanecer y gastando una acción adicional, el portador puede agitar suavemente la varita en dirección al cielo. Emite una fragancia con el olor de las primeras flores de ciruelo.",  emoji:"✝",  imageUrl:"https://i.imgur.com/SQeHp56.png" },
+  { name:"Wagasa - Sombrilla", desc:"Una sombrilla tradicional en Wa, famosa por su belleza estética y su intrincada artesanía manual, hecha con materiales naturales y mágicos", emoji:"🧠", imageUrl:"https://i.imgur.com/6T89Kor.png" },
+  { name:"Sigue Intentando", desc:"XD", emoji:"🐲", imageUrl:"https://i.imgur.com/O5XSVOl.png" },
+];
+
+// ── Paleta de colores alternada para el reverso de las cartas ─────
+const CARD_PALETTES = [
+  ['#1a1a1a','#484848'],
+  ['#0a0e1a','#2a3d70'],
+  ['#150a1a','#5a2a8a'],
+  ['#0a1a0a','#2a5a2a'],
+  ['#1a1400','#8a6800'],
+];
+function getPalette(idx) { return CARD_PALETTES[idx % CARD_PALETTES.length]; }
+
+function shuffleArray(arr) {
+  const a = arr.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let deckOrder = shuffleArray(ITEMS.map((_, i) => i)); // índice de ITEMS en cada posición del mazo
+let foundIndices = new Set();
+let busy = false;
+
+// ── Construcción del mazo de cartas ────────────────────────────────
+function buildGrid() {
+  const grid = document.getElementById('cardGrid');
+  grid.innerHTML = '';
+
+  deckOrder.forEach((itemIdx, pos) => {
+    const item = ITEMS[itemIdx];
+    const pal = getPalette(itemIdx);
+
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.dataset.pos = pos;
+    card.dataset.item = itemIdx;
+
+    const hasImg = item.imageUrl && item.imageUrl.trim() !== '';
+    const imgHtml = hasImg
+      ? `<img src="${item.imageUrl}" alt="" onload="this.classList.add('loaded');this.parentElement.classList.add('has-img')" onerror="this.remove();this.parentElement && this.parentElement.classList.remove('has-img')">`
+      : '';
+
+    card.innerHTML = `
+      <div class="card-inner">
+        <div class="card-face card-back">
+          <div class="card-back-pattern"></div>
+          <span class="card-back-kanji">運</span>
+        </div>
+        <div class="card-face card-front" style="background:linear-gradient(160deg, ${pal[0]}, ${pal[1]})">
+          <div class="card-front-img">
+            <span class="card-emoji">${item.emoji}</span>
+            ${imgHtml}
+          </div>
+          <div class="card-front-name">${item.name}</div>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener('click', () => flipCard(card));
+    grid.appendChild(card);
+  });
+
+  updateProgressNote();
+}
+
+// ── Voltear una carta ──────────────────────────────────────────────
+function flipCard(card) {
+  if (busy) return;
+  if (card.classList.contains('flipped')) return;
+
+  const itemIdx = parseInt(card.dataset.item, 10);
+  card.classList.add('flipped');
+  card.classList.add('disabled');
+  foundIndices.add(itemIdx);
+
+  showResult(itemIdx);
+  markListItemFound(itemIdx);
+  highlightListItem(itemIdx);
+  spawnSakura();
+  updateProgressNote();
+}
+
+// ── Reorganizar el mazo ─────────────────────────────────────────────
+function reorganize() {
+  if (busy) return;
+  busy = true;
+
+  const shuffleBtn = document.getElementById('shuffleBtn');
+  const grid = document.getElementById('cardGrid');
+  shuffleBtn.disabled = true;
+  shuffleBtn.classList.add('spinning');
+
+  // Voltear todas las cartas de vuelta boca abajo
+  Array.from(grid.children).forEach(c => {
+    c.classList.remove('flipped');
+    c.classList.remove('disabled');
+  });
+  document.getElementById('resultPanel').classList.remove('visible');
+  clearListHighlight();
+
+  setTimeout(() => {
+    grid.classList.add('grid-fade');
+    setTimeout(() => {
+      deckOrder = shuffleArray(ITEMS.map((_, i) => i));
+      foundIndices = new Set();
+      buildGrid();
+      resetListFound();
+      grid.classList.remove('grid-fade');
+      shuffleBtn.disabled = false;
+      shuffleBtn.classList.remove('spinning');
+      busy = false;
+    }, 320);
+  }, 620);
+}
+
+// ── Panel de resultado ───────────────────────────────────────────────
+function showResult(idx) {
+  const item = ITEMS[idx];
+
+  document.getElementById('resultName').textContent = item.name;
+  document.getElementById('resultDesc').textContent = item.desc;
+  document.querySelector('#resultImg .result-emoji').textContent = item.emoji;
+
+  updateResultImage(idx);
+  document.getElementById('resultPanel').classList.add('visible');
+}
+
+function updateResultImage(idx) {
+  const imgBox = document.getElementById('resultImg');
+  const imgTag = document.getElementById('resultImgTag');
+  const url = ITEMS[idx].imageUrl;
+  if (url && url.trim() !== '') {
+    imgTag.src = url;
+    imgTag.onload = () => { imgTag.classList.add('loaded'); imgBox.classList.add('has-img'); };
+    imgTag.onerror = () => { imgTag.classList.remove('loaded'); imgBox.classList.remove('has-img'); };
+  } else {
+    imgTag.src = '';
+    imgTag.classList.remove('loaded');
+    imgBox.classList.remove('has-img');
+  }
+}
+
+function updateProgressNote() {
+  document.getElementById('progressNote').innerHTML =
+    `<strong>${foundIndices.size}</strong> / ${ITEMS.length} cartas reveladas`;
+}
+
+// ── Lista de ítems (panel lateral) ───────────────────────────────────
+function buildItemList() {
+  const container = document.getElementById('itemList');
+  container.innerHTML = '';
+  ITEMS.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'item-card';
+    card.id = 'itemcard-' + i;
+
+    const imgHtml = item.imageUrl && item.imageUrl.trim() !== ''
+      ? `<img id="thumbimg-${i}" src="${item.imageUrl}" alt="" class="loaded" onerror="this.classList.remove('loaded');this.parentElement.classList.remove('has-img')">`
+      : `<img id="thumbimg-${i}" src="" alt="">`;
+    const containerClass = item.imageUrl && item.imageUrl.trim() !== '' ? 'item-card-img has-img' : 'item-card-img';
+
+    card.innerHTML = `
+      <div class="${containerClass}" id="imgthumb-${i}">
+        <span class="emoji-label">${item.emoji}</span>
+        ${imgHtml}
+      </div>
+      <div class="item-card-info">
+        <div class="item-card-name">${item.name}</div>
+      </div>
+      <div class="item-card-status" id="itemstatus-${i}">?</div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function markListItemFound(idx) {
+  const el = document.getElementById('itemcard-' + idx);
+  const status = document.getElementById('itemstatus-' + idx);
+  if (el) el.classList.add('found');
+  if (status) status.textContent = '✓';
+}
+function resetListFound() {
+  ITEMS.forEach((_, i) => {
+    const el = document.getElementById('itemcard-' + i);
+    const status = document.getElementById('itemstatus-' + i);
+    if (el) el.classList.remove('found');
+    if (status) status.textContent = '?';
+  });
+}
+function highlightItem(idx) { /* alias retained for clarity */ }
+function highlightListItem(idx) {
+  clearListHighlight();
+  const el = document.getElementById('itemcard-' + idx);
+  if (el) { el.classList.add('highlight'); el.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+}
+function clearListHighlight() {
+  document.querySelectorAll('.item-card').forEach(c => c.classList.remove('highlight'));
+}
+
+// ── Confetti & pétalos ────────────────────────────────────────────
+function spawnSakura() {
+  const container = document.getElementById('confettiContainer');
+  container.innerHTML = '';
+  const colors = ['#c0392b','#e74c3c','#c4a24a','#e8cc80','#f2ede4','#7a1a10'];
+  const count = 60;
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    const isLeaf = Math.random() > 0.5;
+    const size = 6 + Math.random() * 10;
+    p.style.cssText = `
+      left:${Math.random()*100}vw;
+      width:${size}px; height:${size*(isLeaf?1.6:1)}px;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      border-radius:${isLeaf?'0 100% 0 100%':'50%'};
+      animation-delay:${Math.random()*0.6}s;
+      animation-duration:${2.2+Math.random()*1.4}s;
+      opacity:0.9;
+    `;
+    container.appendChild(p);
+  }
+}
+
+function spawnBgPetals() {
+  const bg = document.getElementById('petalsBg');
+  const petalColors = [
+    'radial-gradient(ellipse at 40% 30%, #f8d0d8, #e090a0)',
+    'radial-gradient(ellipse at 40% 30%, #f0c0c8, #d08090)',
+    'radial-gradient(ellipse at 40% 30%, #fde8ec, #f0a0b0)',
+    'radial-gradient(ellipse at 40% 30%, #e8b0c0, #c07080)',
+    'radial-gradient(ellipse at 40% 30%, #fff0f4, #f8c0cc)',
+  ];
+  for (let i = 0; i < 50; i++) {
+    const p = document.createElement('div');
+    p.className = 'petal';
+    const size = 7 + Math.random() * 9;
+    p.style.cssText = `
+      left:${Math.random()*100}vw;
+      width:${size}px; height:${size * (0.8 + Math.random()*0.6)}px;
+      background:${petalColors[Math.floor(Math.random()*petalColors.length)]};
+      animation-delay:${Math.random()*18}s;
+      animation-duration:${8+Math.random()*10}s;
+    `;
+    bg.appendChild(p);
+  }
+}
+
+buildGrid();
+buildItemList();
+spawnBgPetals();
+</script>
+</body>
+</html>
